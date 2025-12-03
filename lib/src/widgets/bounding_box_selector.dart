@@ -17,10 +17,11 @@ class BoundingBoxSelector extends StatefulWidget {
   });
 
   @override
-  State<BoundingBoxSelector> createState() => _BoundingBoxSelectorState();
+  BoundingBoxSelectorState createState() => BoundingBoxSelectorState();
 }
 
-class _BoundingBoxSelectorState extends State<BoundingBoxSelector> {
+/// State class made public to allow access via GlobalKey
+class BoundingBoxSelectorState extends State<BoundingBoxSelector> {
   LatLng? _startPoint;
   LatLng? _currentPoint;
   bool _isDragging = false;
@@ -59,32 +60,7 @@ class _BoundingBoxSelectorState extends State<BoundingBoxSelector> {
     ];
   }
 
-  void _onPointerDown(PointerDownEvent event, LatLng point) {
-    setState(() {
-      _startPoint = point;
-      _currentPoint = point;
-      _isDragging = true;
-    });
-  }
-
-  void _onPointerMove(PointerMoveEvent event, LatLng point) {
-    if (_isDragging) {
-      setState(() {
-        _currentPoint = point;
-      });
-    }
-  }
-
-  void _onPointerUp(PointerUpEvent event, LatLng point) {
-    if (_isDragging) {
-      setState(() {
-        _currentPoint = point;
-        _isDragging = false;
-      });
-      widget.onBoundingBoxChanged(_currentBoundingBox);
-    }
-  }
-
+  /// Clear the current selection
   void clearSelection() {
     setState(() {
       _startPoint = null;
@@ -114,36 +90,40 @@ class _BoundingBoxSelectorState extends State<BoundingBoxSelector> {
             ],
           ),
         GestureDetector(
+          behavior: HitTestBehavior.translucent,
           onLongPressStart: (details) {
             final point = widget.mapController.camera.pointToLatLng(
               Point(details.localPosition.dx, details.localPosition.dy),
             );
-            _onPointerDown(
-              PointerDownEvent(position: details.localPosition),
-              point,
-            );
+            setState(() {
+              _startPoint = point;
+              _currentPoint = point;
+              _isDragging = true;
+            });
           },
           onLongPressMoveUpdate: (details) {
-            final point = widget.mapController.camera.pointToLatLng(
-              Point(details.localPosition.dx, details.localPosition.dy),
-            );
-            _onPointerMove(
-              PointerMoveEvent(position: details.localPosition),
-              point,
-            );
+            if (_isDragging) {
+              final point = widget.mapController.camera.pointToLatLng(
+                Point(details.localPosition.dx, details.localPosition.dy),
+              );
+              setState(() {
+                _currentPoint = point;
+              });
+            }
           },
           onLongPressEnd: (details) {
-            final point = widget.mapController.camera.pointToLatLng(
-              Point(details.localPosition.dx, details.localPosition.dy),
-            );
-            _onPointerUp(
-              PointerUpEvent(position: details.localPosition),
-              point,
-            );
+            if (_isDragging) {
+              final point = widget.mapController.camera.pointToLatLng(
+                Point(details.localPosition.dx, details.localPosition.dy),
+              );
+              setState(() {
+                _currentPoint = point;
+                _isDragging = false;
+              });
+              widget.onBoundingBoxChanged(_currentBoundingBox);
+            }
           },
-          child: Container(
-            color: Colors.transparent,
-          ),
+          child: const SizedBox.expand(),
         ),
       ],
     );

@@ -125,10 +125,15 @@ class DownloadProgressWidget extends StatelessWidget {
         break;
     }
 
+    // Determine appropriate text color based on chip background
+    final textColor = chipColor == theme.colorScheme.outline
+        ? theme.colorScheme.onSurface
+        : Colors.white;
+
     return Chip(
       label: Text(
         label,
-        style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 12),
+        style: TextStyle(color: textColor, fontSize: 12),
       ),
       backgroundColor: chipColor,
       padding: EdgeInsets.zero,
