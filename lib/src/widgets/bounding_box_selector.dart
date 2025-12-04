@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -93,7 +95,7 @@ class BoundingBoxSelectorState extends State<BoundingBoxSelector> {
           behavior: HitTestBehavior.translucent,
           onLongPressStart: (details) {
             final point = widget.mapController.camera.pointToLatLng(
-              Point(details.localPosition.dx, details.localPosition.dy),
+              math.Point(details.localPosition.dx, details.localPosition.dy),
             );
             setState(() {
               _startPoint = point;
@@ -104,7 +106,7 @@ class BoundingBoxSelectorState extends State<BoundingBoxSelector> {
           onLongPressMoveUpdate: (details) {
             if (_isDragging) {
               final point = widget.mapController.camera.pointToLatLng(
-                Point(details.localPosition.dx, details.localPosition.dy),
+                math.Point(details.localPosition.dx, details.localPosition.dy),
               );
               setState(() {
                 _currentPoint = point;
@@ -114,7 +116,7 @@ class BoundingBoxSelectorState extends State<BoundingBoxSelector> {
           onLongPressEnd: (details) {
             if (_isDragging) {
               final point = widget.mapController.camera.pointToLatLng(
-                Point(details.localPosition.dx, details.localPosition.dy),
+                math.Point(details.localPosition.dx, details.localPosition.dy),
               );
               setState(() {
                 _currentPoint = point;
